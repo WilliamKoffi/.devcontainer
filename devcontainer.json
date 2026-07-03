@@ -1,0 +1,34 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/marcosgomesneto/bun-devcontainers/tree/main/src/basic-bun
+{
+  "name": "Portfolio",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "remoteUser": "vscode",
+  "forwardPorts": [3000],
+  "postCreateCommand": "bash .devcontainer/setup.sh all",
+  "postAttachCommand": "bash .devcontainer/setup.sh keybindings",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "oven.bun-vscode",
+        "ms-azuretools.vscode-docker",
+        "sleistner.vscode-fileutils",
+        "PKief.material-icon-theme",
+        "usernamehw.remove-empty-lines",
+        "dbankier.vscode-quick-select"
+      ],
+      "settings": {
+        "workbench.iconTheme": "material-icon-theme",
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/usr/bin/zsh"
+          }
+        }
+      }
+    }
+  }
+}
