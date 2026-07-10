@@ -64,14 +64,28 @@ dotfiles() {
 
   echo "Dotfiles installed."
 }
-
 base() {
+  # Assuming 'log' is a custom function defined elsewhere in your script. 
+  # If not, change this to 'echo'.
   log "Installing project dependencies"
 
+  # 1. Install dependencies if bun is available and package.json exists
   if command -v bun >/dev/null 2>&1 && [ -f "package.json" ]; then
     bun install
   else
     echo "No package.json found or bun is not installed. Skipping."
+  fi
+
+  # 2. Execute the post-create logic directly in Bash
+  if [ -d "./.devcontainer/.agents" ]; then 
+    mkdir -p ./trash 
+    mv ./.devcontainer/.agents ./trash/agents/
+    rm -r ./.devcontainer/.agents
+  fi
+  
+  # 3. Add trash directory to .gitignore if it isn't already there
+  if ! grep -qxF "trash/" .gitignore; then
+    echo "trash/" >> .gitignore
   fi
 }
 
