@@ -18,9 +18,32 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
     bat \
     zsh \
     stow \
+    gpg \
+    zoxide \
     && ln -sf /usr/bin/batcat /usr/local/bin/bat \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && git lfs install --system \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# eza (apt repo from the eza maintainers)
+RUN mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://raw.githubusercontent.com/eza-community/eza/main/deb.asc \
+    | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg \
+    && chmod 644 /etc/apt/keyrings/gierens.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" \
+    > /etc/apt/sources.list.d/gierens.list \
+    && apt-get update \
+    && apt-get -y install --no-install-recommends eza \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js + npm (NodeSource LTS), pnpm via corepack
+ARG NODE_MAJOR=22
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
+    && apt-get -y install --no-install-recommends nodejs \
+    && corepack enable \
+    && corepack prepare pnpm@latest --activate \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,7 +51,11 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
 USER vscode
 
 ENV BUN_INSTALL="/home/vscode/.bun"
-ENV PATH="/home/vscode/.bun/bin:/home/vscode/.local/bin:${PATH}"
+ENV NPM_CONFIG_PREFIX="/home/vscode/.npm-global"
+ENV PNPM_HOME="/home/vscode/.local/share/pnpm"
+ENV PATH="/home/vscode/.bun/bin:/home/vscode/.npm-global/bin:/home/vscode/.local/share/pnpm:/home/vscode/.local/bin:${PATH}"
+
+RUN mkdir -p "$NPM_CONFIG_PREFIX/bin" "$PNPM_HOME"
 
 RUN curl -fsSL https://bun.sh/install | bash
 
