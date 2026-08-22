@@ -47,7 +47,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Install Bun + Codex + Antigravity + npm agent tooling for the Codespaces user
+# 2. Install Bun + Codex + Antigravity + agent tooling for the Codespaces user
 USER vscode
 
 ENV BUN_INSTALL="/home/vscode/.bun"
@@ -63,8 +63,14 @@ RUN curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh
 
 RUN curl -fsSL https://antigravity.google/cli/install.sh | bash
 
+# uv (Astral) - shims land in /home/vscode/.local/bin, already on PATH
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # Coding agents / tooling from npm
 RUN npm install -g freebuff @nanonets/graft
+
+# Graphify - https://github.com/Graphify-Labs/graphify
+RUN uv tool install graphifyy
 
 # 3. Keep vscode as default user
 USER vscode
