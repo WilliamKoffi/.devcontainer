@@ -87,9 +87,9 @@ sync_skills() {
   git clone --filter=blob:none --sparse "$REPO" ./.dotfiles
   (cd ./.dotfiles && git sparse-checkout add skills)
 
-  mkdir -p ./.devcontainer/.agents
-  rm -rf ./.devcontainer/.agents/skills
-  cp -r ./.dotfiles/skills ./.devcontainer/.agents/skills
+  mkdir -p ./.agents
+  rm -rf ./.agents/skills
+  cp -r ./.dotfiles/skills ./.agents/skills
   rm -rf ./.dotfiles
 
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -106,7 +106,7 @@ sync_skills() {
     fi
   fi
 
-  echo "Skills synced into .devcontainer/.agents/skills."
+  echo "Skills synced into .agents/skills."
 }
 
 case "$TASK" in
