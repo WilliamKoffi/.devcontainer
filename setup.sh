@@ -111,6 +111,8 @@ agents() {
     ".mcp.json"
     ".playwright-mcp"
     "opencode.json"
+    "graphify-out"
+    "trash"
   )
 
   EXCLUDE=".git/info/exclude"

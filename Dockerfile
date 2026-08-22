@@ -20,6 +20,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
     stow \
     gpg \
     zoxide \
+    fzf \
     && ln -sf /usr/bin/batcat /usr/local/bin/bat \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && git lfs install --system \
@@ -71,6 +72,14 @@ RUN npm install -g freebuff @nanonets/graft
 
 # Graphify - https://github.com/Graphify-Labs/graphify
 RUN uv tool install graphifyy
+
+# Oh My Zsh custom plugins referenced by the dotfiles' plugins=(...) list
+ENV ZSH_CUSTOM="/home/vscode/.oh-my-zsh/custom"
+RUN mkdir -p "$ZSH_CUSTOM/plugins" \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+        "$ZSH_CUSTOM/plugins/zsh-autosuggestions" \
+    && git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+        "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 
 # 3. Keep vscode as default user
 USER vscode
