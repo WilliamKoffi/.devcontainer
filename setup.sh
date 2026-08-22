@@ -92,21 +92,48 @@ sync_skills() {
   cp -r ./.dotfiles/skills ./.agents/skills
   rm -rf ./.dotfiles
 
-  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    EXCLUDE="./.git/info/exclude"
-    for pattern in ".devcontainer" ".agents"; do
-      if ! grep -qxF "$pattern" "$EXCLUDE" 2>/dev/null; then
-        echo "$pattern" >> "$EXCLUDE"
-      fi
-    done
+  echo "Skills synced into .agents/skills."
+}
 
-    if [ -d ./.devcontainer/.git ]; then
-      log "Detaching nested .devcontainer/.git"
-      rm -rf ./.devcontainer/.git
-    fi
+agents() {
+  log "Hiding agent artifacts from the host repository"
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Not inside a git work tree. Skipping."
+    return
   fi
 
-  echo "Skills synced into .agents/skills."
+  PATHS=(
+    ".devcontainer"
+    ".agents"
+    ".claude"
+    ".gemini"
+    ".mcp.json"
+    ".playwright-mcp"
+    "opencode.json"
+  )
+
+  EXCLUDE=".git/info/exclude"
+
+  for path in "${PATHS[@]}"; do
+    if ! grep -qxF "/$path" "$EXCLUDE" 2>/dev/null &&
+       ! grep -qxF "$path" "$EXCLUDE" 2>/dev/null; then
+      echo "/$path" >> "$EXCLUDE"
+    fi
+
+    # an exclude never applies to a file git already tracks
+    if [ -n "$(git ls-files -- "$path")" ]; then
+      git rm -r --cached --quiet -- "$path"
+      echo "Untracked $path"
+    fi
+  done
+
+  if [ -d ".devcontainer/.git" ]; then
+    log "Detaching nested .devcontainer/.git"
+    rm -rf ".devcontainer/.git"
+  fi
+
+  echo "Agent artifacts excluded."
 }
 
 case "$TASK" in
@@ -115,6 +142,7 @@ case "$TASK" in
     keybindings
     base
     sync_skills
+    agents
     ;;
   dotfiles)
     dotfiles
@@ -128,9 +156,12 @@ case "$TASK" in
   skills)
     sync_skills
     ;;
+  agents)
+    agents
+    ;;
   *)
     echo "Unknown setup task: $TASK"
-    echo "Available tasks: all, dotfiles, keybindings, base, skills"
+    echo "Available tasks: all, dotfiles, keybindings, base, skills, agents"
     exit 1
     ;;
 esac

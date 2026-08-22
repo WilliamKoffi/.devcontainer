@@ -47,7 +47,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Install Bun + Codex + Antigravity for the Codespaces user
+# 2. Install Bun + Codex + Antigravity + npm agent tooling for the Codespaces user
 USER vscode
 
 ENV BUN_INSTALL="/home/vscode/.bun"
@@ -62,6 +62,9 @@ RUN curl -fsSL https://bun.sh/install | bash
 RUN curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh
 
 RUN curl -fsSL https://antigravity.google/cli/install.sh | bash
+
+# Coding agents / tooling from npm
+RUN npm install -g freebuff @nanonets/graft
 
 # 3. Keep vscode as default user
 USER vscode
