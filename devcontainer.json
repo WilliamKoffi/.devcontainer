@@ -9,7 +9,6 @@
   "remoteUser": "vscode",
   "forwardPorts": [3000],
   "postCreateCommand": "bash .devcontainer/setup.sh all",
-  "postAttachCommand": "bash .devcontainer/setup.sh keybindings",
   "customizations": {
     "vscode": {
       "extensions": [

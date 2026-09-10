@@ -141,7 +141,6 @@ agents() {
 case "$TASK" in
   all)
     dotfiles
-    keybindings
     base
     sync_skills
     agents
